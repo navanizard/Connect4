@@ -16,6 +16,7 @@ class Board{
         int winInVertical(int bin);
         int winInDiagonal(int bin);
         int win(int bin); //column must be the most recent ball in that bin
+        // bool isFull() const; //checks if the grid is full (at capacity)
         void play();
         //Make public for the main file to be able to access it
         int numBins; //number of bins / LENGTH

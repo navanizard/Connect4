@@ -3,7 +3,7 @@ Author: Nava Karine Nizard
 Course: CSCI-135
 Instructor: Professor Tong Yi
 Date: April 20, 2025
-Assignment: Project 3 (Tasks A-B)
+Assignment: Project 3 (Tasks A-C)
 
 This program simulates a two-player Connect4 game from the command line.
 */
@@ -25,7 +25,7 @@ Board::Board(){
     numBins = 6; //length or columns
     capacity = 4; //height or rows
     //push (empty) vertical vectors (bins)
-    for (int numRows = 0; numRows < numBins; numRows++){
+    for (int i = 0; i < numBins; i++){
         vector<int> v1;
         grid.push_back(v1);
     } 
@@ -64,7 +64,7 @@ void Board::display() const {
         "\033[31m\u2b24\033[0m", // 0 = red circle (🔴)
         "\033[34m\u2b1f\033[0m", // 1 = blue pentagon (🔷)
         "\033[31m\u25c9\033[0m", // 2 = red double circle (⭕)
-        "\033[34m\u2b54\033[0m"  // 3 = blue empty pentagon (🔺)
+        "\033[34m\u2b54\033[0m"  // 3 = blue empty pentagon 
     };
 
     print(numBins);
@@ -86,7 +86,7 @@ void Board::display() const {
 
     //Print out the labels of the column numbers
     for (int i = 0; i < numBins; i++){
-        cout << " " << i ;
+        cout << " " << i << " ";
     }
 }
 
@@ -95,12 +95,13 @@ int Board::add(int player){
     int binIdx;
     cout << "Enter a bin index in [0, " << numBins << ") that is not full: ";
     cin >> binIdx;
-    while ((binIdx < 0 || binIdx >= numBins)){
-        cout << "Invalid bin entered. Must be in [0, " << numBins << "). Reenter a bin index: ";
-        cin >> binIdx;
-    }
-    while(grid[binIdx].size() >= capacity){
-        cout << "The bin entered is full. Reenter bin index: ";
+    while ((binIdx < 0 || binIdx >= numBins) || grid[binIdx].size() >= capacity){
+        if ((binIdx < 0 || binIdx >= numBins)){
+            cout << "Invalid bin entered. Must be in [0, " << numBins << "). Reenter a bin index: ";
+        }
+        else{
+            cout << "The bin entered is full. Reenter bin index: ";
+        }
         cin >> binIdx;
     }
 
@@ -171,13 +172,16 @@ int Board::winInVertical(int bin){
 
     return -1; //if no winner is found, return -1
 }
+
 int Board::winInDiagonal(int bin){
     int idx = grid[bin].size() - 1; //idx of last element added to the bin
     int player = grid[bin][idx]; //gets the ID of player who last played
-    vector<Coord> candidates; //saves the bin and idx of each shape sharing player along the anti-diagonal path
+    vector<Coord> antiDiagonalCandidates; //saves the bin and idx of each shape sharing player along the anti-diagonal path
+    vector<Coord> diagonalCandidates;
 
     //the first possible winning candidate
-    candidates.push_back({bin, idx});
+    antiDiagonalCandidates.push_back({bin, idx});
+    diagonalCandidates.push_back({bin, idx});
 
     //ANTI-DIAGONAL:
     //find top left neighbors
@@ -185,8 +189,8 @@ int Board::winInDiagonal(int bin){
     int currIdx = idx + 1;
 
     //verifies that the pairs are consecutive and the indeces are valid
-    while(currBin >= 0 && currIdx < grid[currBin].size() && grid[currBin][currIdx] == player){
-        candidates.push_back({currBin, currIdx}); //add it if its a match. save in case it wins
+    while(currBin >= 0 && (currIdx < grid[currBin].size()) && grid[currBin][currIdx] == player){
+        antiDiagonalCandidates.push_back({currBin, currIdx}); //add it if its a match. save in case it wins
         //Update variables
         currBin--;
         currIdx++;
@@ -197,8 +201,8 @@ int Board::winInDiagonal(int bin){
     currIdx = idx - 1;
 
     //currBin < numBins or grid.size() (amount of elements in grid//vectors)
-    while(currBin < numBins && currIdx >= 0 && grid[currBin][currIdx] == player){
-        candidates.push_back({currBin, currIdx});
+    while(currBin < numBins && currIdx >= 0 && (currIdx < grid[currBin].size()) && grid[currBin][currIdx] == player){
+        antiDiagonalCandidates.push_back({currBin, currIdx});
         currBin++;
         currIdx--;
     }
@@ -208,8 +212,8 @@ int Board::winInDiagonal(int bin){
     currBin = bin + 1;
     currIdx = idx + 1;
 
-    while (currBin < numBins && currIdx < grid[currBin].size() && grid[currBin][currIdx] == player){
-        candidates.push_back({currBin, currIdx});
+    while (currBin < numBins && (currIdx < grid[currBin].size()) && grid[currBin][currIdx] == player){
+        diagonalCandidates.push_back({currBin, currIdx});
         currBin++;
         currIdx++;
     }
@@ -218,17 +222,26 @@ int Board::winInDiagonal(int bin){
     currBin = bin - 1;
     currIdx = idx - 1;
 
-    while (currBin >= 0 && currIdx >= 0 && grid[currBin][currIdx] == player){
-        candidates.push_back({currBin, currIdx});
+    while (currBin >= 0 && currIdx >= 0 && (currIdx < grid[currBin].size()) && grid[currBin][currIdx] == player){
+        diagonalCandidates.push_back({currBin, currIdx});
         currBin--;
         currIdx--;
     }
 
-    //check if there are 4 in a row (diagonally or antidiagonally)
-    if (candidates.size() >= 4){
+    //check if there are 4 in a row (antidiagonally)
+    if (antiDiagonalCandidates.size() >= 4){
         //change the winning sequence to a diff color to diffrentiate
         for (int i = 0; i < 4; i++){
-            grid[candidates[i].bin][candidates[i].idx] = player + 2;
+            grid[antiDiagonalCandidates[i].bin][antiDiagonalCandidates[i].idx] = player + 2;
+        }
+        return player;
+    }
+
+    //check if there are 4 in a row (diagonally)
+    else if (diagonalCandidates.size() >= 4){
+        //change the winning sequence to a diff color to diffrentiate
+        for (int i = 0; i < 4; i++){
+            grid[diagonalCandidates[i].bin][diagonalCandidates[i].idx] = player + 2;
         }
         return player;
     }
@@ -236,26 +249,69 @@ int Board::winInDiagonal(int bin){
     return -1;
 }
 
-
 int Board::win(int bin){
     int winningPlayer = grid[bin][grid[bin].size() - 1]; //last person who played
 
-    if (winInHorizontal(bin)){
+    if (winInHorizontal(bin) == winningPlayer){
         return winningPlayer;
     }
 
-    if (winInVertical(bin)){
+    if (winInVertical(bin) == winningPlayer){
         return winningPlayer;
     }
 
-    if (winInDiagonal(bin)){
+    if (winInDiagonal(bin) == winningPlayer){
         return winningPlayer;
     }
-
-    cout << "No winner.";
 
     return -1;
 }
+
 void Board::play(){
-    return;
+    bool gameOver = false;
+    int ballsDropped = 0;
+    //Display an empty grid to start with
+    display();
+    cout << endl;
+
+    int player1 = 0;
+    int player2 = 1;
+
+    while(ballsDropped < (numBins * capacity)){ //while there's still room on the grid and no winner found yet, continue playing
+        cout << "Player: Red" << endl;
+        int move1 = add(player1);
+        ballsDropped++;
+        if (win(move1) == player1){
+            gameOver = true;
+            cout << "Winner: Red!" << endl;
+            break;
+        }
+        display();
+        cout << endl;
+
+        if (ballsDropped == (numBins * capacity)){ //in the case of ___, check if board is full after red player,
+            break;                                // so as not to let blue play if there's no more space 
+        }
+
+        cout << "Player: Blue" << endl;
+        int move2 = add(player2);
+        ballsDropped++;
+        if (win(move2) == player2){
+            gameOver = true;
+            cout << "Winner: Blue!" << endl;
+            break;
+        }
+        display();
+        cout << endl;
+
+
+    }
+
+    if (ballsDropped == (numBins * capacity) && !gameOver){ // if full and no one won, it's a tie
+        cout << "Tie" << endl;
+    }
+
+    display();
+    cout << endl;
+
 }
