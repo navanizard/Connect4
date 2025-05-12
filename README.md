@@ -17,19 +17,19 @@ Key features:
 ## 📸 Screenshots
 **Welcome Screen:**
 
-![Welcome Screen](screenshots/selectType.png)
+![Welcome Screen](Screenshots/WelcomeScreen.png)
 
 **First Move**
 
-![First Move](screenshots/threeWrong.png)
+![First Move](Screenshots/FirstMove.png)
 
-**Win in Horizontal**
+**Win in Diagonal**
 
-![Win in Horizontal](screenshots/results.png)
+![Win in Horizontal](Screenshots/winInDiagonal.png)
 
 **Tie**
 
-![Tie](screenshots/results.png)
+![Tie](Screenshots/Tie.png)
 
 ## 🛠️ How to Play
 
