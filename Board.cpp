@@ -310,7 +310,7 @@ void Board::play(){
     }
 
     if (ballsDropped == (numBins * capacity) && !gameOver){ // if full and no one won, it's a tie
-        cout << "a tie" << endl;
+        cout << "Tie" << endl;
     }
 
     cout << endl;
