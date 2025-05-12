@@ -63,11 +63,6 @@ Key features:
 - **Modular Design:** Each win condition (horizontal, vertical, diagonal) is implemented in its own method for clarity and reuse.
 - **Terminal UI:** Uses Unicode and ANSI escape codes for colored and stylized output.
 
-## 🚀 Potential Enhancements
-
-- Add **AI** to allow single-player mode.
-- Add a **menu** for choosing board size or viewing instructions.
-- Improve the visual display to work on all terminals (cross-platform testing).
 ---
 
 This project helped solidify my understanding of game loops, object-oriented programming, and terminal I/O in C++. Hope you enjoy playing it as much as I enjoyed building it!
