@@ -277,19 +277,20 @@ void Board::play(){
     int player1 = 0;
     int player2 = 1;
 
-    while(ballsDropped < (numBins * capacity)){ //while there's still room on the grid and no winner found yet, continue playing
+    while(ballsDropped < (numBins * capacity) && !gameOver){ //while there's still room on the grid and no winner found yet, continue playing
         cout << "Player: Red" << endl;
         int move1 = add(player1);
         ballsDropped++;
         if (win(move1) == player1){
             gameOver = true;
-            cout << "Winner: Red!" << endl;
+            display();
+            cout << endl << "Winner: Red!" << endl;
             break;
         }
         display();
         cout << endl;
 
-        if (ballsDropped == (numBins * capacity)){ //in the case of ___, check if board is full after red player,
+        if (ballsDropped == (numBins * capacity)){ //check if board is full after red player,
             break;                                // so as not to let blue play if there's no more space 
         }
 
@@ -298,7 +299,8 @@ void Board::play(){
         ballsDropped++;
         if (win(move2) == player2){
             gameOver = true;
-            cout << "Winner: Blue!" << endl;
+            display();
+            cout << endl << "Winner: Blue!" << endl;
             break;
         }
         display();
@@ -308,10 +310,9 @@ void Board::play(){
     }
 
     if (ballsDropped == (numBins * capacity) && !gameOver){ // if full and no one won, it's a tie
-        cout << "Tie" << endl;
+        cout << "a tie" << endl;
     }
 
-    display();
     cout << endl;
 
 }
